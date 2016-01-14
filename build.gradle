@@ -1,0 +1,12 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile 'com.nativelibs4java:javacl-core:1.0.0-RC4'
+	compile project(':KristAPI')
+}

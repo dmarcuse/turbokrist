@@ -1,0 +1,15 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+mainClassName = 'me.apemanzilla.krist.turbokrist.cli.Launcher'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile 'commons-cli:commons-cli:1.3.1'
+	compile rootProject
+}

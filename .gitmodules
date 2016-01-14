@@ -1,0 +1,3 @@
+[submodule "KristAPI"]
+	path = KristAPI
+	url = https://github.com/apemanzilla/KristAPI.git
