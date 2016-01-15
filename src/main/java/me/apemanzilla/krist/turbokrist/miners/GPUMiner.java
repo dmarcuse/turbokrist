@@ -35,7 +35,7 @@ public final class GPUMiner extends Miner implements Runnable {
 	private CLBuffer<Byte> blockBuffer;
 	private CLBuffer<Byte> prefixBuffer;
 	private CLBuffer<Byte> outputBuf;
-	
+
 	/**
 	 * Creates a GPUMiner object. This constructor should not be used - you
 	 * should instead use
