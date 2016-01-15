@@ -124,4 +124,11 @@ public abstract class Miner extends Observable {
 			return n;
 		}
 	}
+
+	/**
+	 * If applicable, destroys the {@code Miner}, releasing all held resources.
+	 */
+	public void destroy() {
+
+	}
 }

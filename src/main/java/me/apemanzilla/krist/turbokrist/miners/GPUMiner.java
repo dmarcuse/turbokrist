@@ -30,10 +30,17 @@ public final class GPUMiner extends Miner implements Runnable {
 	private final CLQueue queue;
 	private final CLKernel kernel;
 
+	private final int[] workSize;
+
 	private final CLBuffer<Byte> addressBuffer;
 	private CLBuffer<Byte> blockBuffer;
 	private CLBuffer<Byte> prefixBuffer;
-	private CLBuffer<Byte> outputBuf;
+	private CLBuffer<Byte> outputBuffer;
+
+	private Thread manager;
+	private boolean run = false;
+
+	private boolean destroyed = false;
 
 	/**
 	 * Creates a GPUMiner object. This constructor should not be used - you
@@ -60,6 +67,7 @@ public final class GPUMiner extends Miner implements Runnable {
 		byte[] addressBytes = MinerUtils.getBytes(options.getKristAddress().getAddress());
 		addressPtr.setArray(addressBytes);
 		this.addressBuffer = context.createByteBuffer(Usage.Input, addressPtr);
+		this.workSize = new int[] { options.getWorkSize(MinerFactory.generateSignature(dev)) };
 	}
 
 	@Override
@@ -70,25 +78,31 @@ public final class GPUMiner extends Miner implements Runnable {
 		prefixPtr.setArray(MinerUtils.getBytes(MinerFactory.generatePrefix()));
 		blockBuffer = context.createByteBuffer(Usage.Input, blockPtr);
 		prefixBuffer = context.createByteBuffer(Usage.Input, prefixPtr);
-		outputBuf = context.createByteBuffer(Usage.Output, 34);
+		outputBuffer = context.createByteBuffer(Usage.Output, 34);
 	}
 
 	@Override
 	protected void startMining(String block, int work) {
-		// TODO Auto-generated method stub
-
+		if (!destroyed) {
+			manager = new Thread(this);
+			run = true;
+			manager.start();
+		}
 	}
 
 	@Override
 	protected void stopMining() {
-		// TODO Auto-generated method stub
-
+		if (!destroyed) {
+			run = false;
+			if (manager != null) {
+				manager.interrupt();
+			}
+		}
 	}
 
 	@Override
 	public boolean isMining() {
-		// TODO Auto-generated method stub
-		return false;
+		return (!destroyed && manager != null && manager.isAlive());
 	}
 
 	@Override
@@ -104,9 +118,22 @@ public final class GPUMiner extends Miner implements Runnable {
 	}
 
 	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-
+	public void destroy() {
+		stop();
+		destroyed = true;
+		context.release();
+		queue.release();
+		kernel.release();
+		addressBuffer.release();
+		blockBuffer.release();
+		prefixBuffer.release();
+		outputBuffer.release();
 	}
 
+	@Override
+	public void run() {
+		while (run) {
+
+		}
+	}
 }

@@ -85,4 +85,8 @@ public class MinerFactory {
 		return String.format("%2x", new Random().nextInt(256));
 	}
 
+	public static int generateSignature(CLDevice dev) {
+		return dev.createSignature().hashCode();
+	}
+
 }

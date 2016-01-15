@@ -16,7 +16,7 @@ public class TestCLMining extends OpenCLTest {
 
 	@Test
 	public void testMining_hashToLong() {
-		String[] inputs = {"","hello","hi","ADLGeag3"};
+		String[] inputs = { "", "hello", "hi", "ADLGeag3" };
 		CLKernel kernel = program.createKernel("testHashToLong");
 		for (String input : inputs) {
 			byte[] hashed = MinerUtils.digest(MinerUtils.getBytes(input));
@@ -27,7 +27,7 @@ public class TestCLMining extends OpenCLTest {
 			CLBuffer<Byte> inputBuf = context.createByteBuffer(Usage.Input, inputPtr);
 			CLBuffer<Long> outputBuf = context.createLongBuffer(Usage.Output, 1);
 			kernel.setArgs(inputBuf, outputBuf);
-			CLEvent evt = kernel.enqueueNDRange(queue, new int[] {1});
+			CLEvent evt = kernel.enqueueNDRange(queue, new int[] { 1 });
 			Pointer<Long> outputPtr = outputBuf.read(queue, evt);
 			long expect = MinerUtils.hashToLong(hashed);
 			long got = outputPtr.get(0);

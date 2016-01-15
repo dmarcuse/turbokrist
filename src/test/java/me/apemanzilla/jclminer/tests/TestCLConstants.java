@@ -19,12 +19,10 @@ public class TestCLConstants extends OpenCLTest {
 		int[] K = MinerUtils.K;
 		CLBuffer<Integer> outputBuf = context.createIntBuffer(Usage.Output, K.length);
 		CLKernel kernel = program.createKernel("testK", outputBuf);
-		CLEvent evt = kernel.enqueueNDRange(queue, new int[] {K.length});
+		CLEvent evt = kernel.enqueueNDRange(queue, new int[] { K.length });
 		Pointer<Integer> outputPtr = outputBuf.read(queue, evt);
 		for (int i = 0; i < K.length; i++) {
-			int
-					got = outputPtr.getIntAtIndex(i),
-					expected = K[i];
+			int got = outputPtr.getIntAtIndex(i), expected = K[i];
 			assertEquals(String.format("Got %d, expected %d for item %d", got, expected, i), expected, got);
 		}
 	}
