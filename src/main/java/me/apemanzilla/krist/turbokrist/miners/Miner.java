@@ -26,6 +26,12 @@ public abstract class Miner extends Observable {
 	private long prevTime = 0;
 
 	/**
+	 * Internal method to be run before hash rate counter is started - should be
+	 * used for any initialization.
+	 */
+	protected abstract void preMining(String block, int work);
+
+	/**
 	 * Internal method to start mining.
 	 */
 	protected abstract void startMining(String block, int work);
@@ -40,9 +46,11 @@ public abstract class Miner extends Observable {
 	 */
 	public void start(String block, int work) {
 		hashes = 0;
-		startTime = System.currentTimeMillis();
+		startTime = 0;
 		prevHashes = 0;
 		prevTime = 0;
+		preMining(block, work);
+		startTime = System.currentTimeMillis();
 		startMining(block, work);
 	}
 

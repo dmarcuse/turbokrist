@@ -6,7 +6,7 @@ public class MinerOptions {
 
 	private KristAddress address;
 
-	public KristAddress getAddress() {
+	public KristAddress getKristAddress() {
 		return address;
 	}
 

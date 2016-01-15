@@ -2,6 +2,7 @@ package me.apemanzilla.krist.turbokrist.miners;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import com.nativelibs4java.opencl.CLDevice;
 import com.nativelibs4java.opencl.CLPlatform;
@@ -78,6 +79,10 @@ public class MinerFactory {
 	 */
 	public static int getSignature(CLDevice dev) {
 		return dev.createSignature().hashCode();
+	}
+
+	public static String generatePrefix() {
+		return String.format("%2x", new Random().nextInt(256));
 	}
 
 }
