@@ -12,4 +12,6 @@ repositories {
 dependencies {
 	compile 'com.nativelibs4java:javacl-core:1.0.0-RC4'
 	compile project(':KristAPI')
+	
+	testCompile 'junit:junit:4.12'
 }

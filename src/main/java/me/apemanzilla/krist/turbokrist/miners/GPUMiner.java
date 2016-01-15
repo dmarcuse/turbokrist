@@ -10,7 +10,6 @@ import com.nativelibs4java.opencl.CLProgram;
 import com.nativelibs4java.opencl.CLQueue;
 import com.nativelibs4java.opencl.CLMem.Usage;
 
-import me.apemanzilla.krist.turbokrist.MinerController;
 import me.apemanzilla.krist.turbokrist.MinerOptions;
 import me.apemanzilla.krist.turbokrist.MinerUtils;
 import me.apemanzilla.krist.turbokrist.opencl.ProgramBuildException;
