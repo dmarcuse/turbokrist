@@ -61,7 +61,7 @@ __constant uint K[64] = {
 void digest(byte* data, uint inputLen, byte* hash) {
 	/* init vars */
 	uint h0, h1, h2, h3, h4, h5, h6, h7;
-	uint a, b, c, d, e, f, g, h, i, j, l, t1, t2, m[64] = {0};
+	uint a, b, c, d, e, f, g, h, i, l, t1, t2, m[64] = {0};
 	PAD(data, inputLen);
 	/* init hash state */
 	h0 = 0x6a09e667;
@@ -112,7 +112,7 @@ void digest(byte* data, uint inputLen, byte* hash) {
 	/* finish */
 #pragma unroll
 	for (i = 0; i < 4; ++i) {
-		l = mult_add(i, -8, 24);
+		l = 24 - i * 8;
 		hash[i]      = (h0 >> l) & 0x000000ff;
 		hash[i + 4]  = (h1 >> l) & 0x000000ff;
 		// only the first 6 bytes are needed.
