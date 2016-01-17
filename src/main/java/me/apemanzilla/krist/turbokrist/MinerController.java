@@ -3,7 +3,12 @@ package me.apemanzilla.krist.turbokrist;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nativelibs4java.opencl.CLDevice;
+
 import me.apemanzilla.krist.state.NodeStateListener;
+import me.apemanzilla.krist.turbokrist.miners.Miner;
+import me.apemanzilla.krist.turbokrist.miners.MinerFactory;
+import me.apemanzilla.krist.turbokrist.miners.MinerInitException;
 import me.apemanzilla.krist.turbokrist.miners.MinerListener;
 import me.apemanzilla.krist.turbokrist.miners.Solution;
 
@@ -21,10 +26,45 @@ public class MinerController implements Runnable, MinerListener, NodeStateListen
 
 	private List<MinerControllerListener> listeners = new ArrayList<MinerControllerListener>();
 
+	private List<Miner> miners = new ArrayList<Miner>();
+
 	private State state = State.NOT_READY;
 
+	/**
+	 * Creates a new MinerController @param options Options to use
+	 */
 	public MinerController(MinerOptions options) {
 		this.options = options;
+	}
+
+	/**
+	 * Creates all Miner objects based on options given upon construction
+	 */
+	public void createMiners() throws TurbokristFatalException {
+		List<CLDevice> devices = options.getMiningDevices();
+		for (CLDevice dev : devices) {
+			Miner m;
+			try {
+				m = MinerFactory.createMiner(dev, options);
+				miners.add(m);
+				for (MinerControllerListener mcl : listeners) {
+					mcl.minerCreated(m);
+				}
+			} catch (MinerInitException e) {
+				for (MinerControllerListener mcl : listeners) {
+					mcl.errorOccurred(e);
+				}
+			}
+		}
+		if (miners.size() > 0) {
+			setState(State.READY);
+		} else {
+			TurbokristFatalException e = new TurbokristFatalException("Could not create any miners!");
+			for (MinerControllerListener mcl : listeners) {
+				mcl.errorOccurred(e);
+			}
+			throw e;
+		}
 	}
 
 	@Override
@@ -61,9 +101,9 @@ public class MinerController implements Runnable, MinerListener, NodeStateListen
 		 */
 		NOT_READY,
 		/**
-		 * The MinerController is not running
+		 * The MinerController is not running but is ready to run
 		 */
-		NOT_RUNNING,
+		READY,
 		/**
 		 * Miners are being started
 		 */

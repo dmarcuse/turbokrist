@@ -1,5 +1,6 @@
 package me.apemanzilla.krist.turbokrist;
 
+import me.apemanzilla.krist.turbokrist.miners.Miner;
 import me.apemanzilla.krist.turbokrist.miners.Solution;
 
 /**
@@ -13,6 +14,12 @@ import me.apemanzilla.krist.turbokrist.miners.Solution;
  *
  */
 public interface MinerControllerListener {
+
+	/**
+	 * Called when a Miner is successfully created @param m The Miner that was
+	 * created
+	 */
+	public void minerCreated(Miner m);
 
 	/**
 	 * Called when a block is being submitted

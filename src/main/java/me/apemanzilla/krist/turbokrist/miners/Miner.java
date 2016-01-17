@@ -29,6 +29,11 @@ public abstract class Miner {
 	private List<MinerListener> listeners = new ArrayList<MinerListener>();
 
 	/**
+	 * Gets the name of the Miner @return The Miner's name
+	 */
+	public abstract String getName();
+
+	/**
 	 * Internal method to be run before hash rate counter is started - should be
 	 * used for any initialization.
 	 */
