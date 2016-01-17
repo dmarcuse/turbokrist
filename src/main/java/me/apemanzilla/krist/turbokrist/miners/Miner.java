@@ -1,6 +1,7 @@
 package me.apemanzilla.krist.turbokrist.miners;
 
-import java.util.Observable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents an object that can be used to mine Krist. In addition to the
@@ -10,7 +11,7 @@ import java.util.Observable;
  * @author apemanzilla
  *
  */
-public abstract class Miner extends Observable {
+public abstract class Miner {
 
 	/**
 	 * Represents the number of hashes completed by this miner. This variable
@@ -24,6 +25,8 @@ public abstract class Miner extends Observable {
 	private long prevHashes = 0;
 
 	private long prevTime = 0;
+
+	private List<MinerListener> listeners = new ArrayList<MinerListener>();
 
 	/**
 	 * Internal method to be run before hash rate counter is started - should be
@@ -88,9 +91,14 @@ public abstract class Miner extends Observable {
 	 */
 	public abstract Solution getSolution();
 
-	protected void notifyListeners() {
-		setChanged();
-		notifyObservers();
+	public void addListener(MinerListener ml) {
+		listeners.add(ml);
+	}
+
+	protected void solved(Solution sol) {
+		for (MinerListener ml : listeners) {
+			ml.blockSolved(sol);
+		}
 	}
 
 	/**
@@ -101,7 +109,7 @@ public abstract class Miner extends Observable {
 	public double getAverageHashrate() {
 		if (hashes == 0 || startTime == 0)
 			return 0;
-		return (double) hashes / (double) ((System.currentTimeMillis() - startTime) - 1000);
+		return (double) hashes / (double) ((System.currentTimeMillis() - startTime) / 1000);
 	}
 
 	/**

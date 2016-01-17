@@ -1,10 +1,13 @@
 package me.apemanzilla.krist.turbokrist.miners;
 
+import java.util.Arrays;
+
 import org.bridj.Pointer;
 
 import com.nativelibs4java.opencl.CLBuffer;
 import com.nativelibs4java.opencl.CLContext;
 import com.nativelibs4java.opencl.CLDevice;
+import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLKernel;
 import com.nativelibs4java.opencl.CLProgram;
 import com.nativelibs4java.opencl.CLQueue;
@@ -37,6 +40,8 @@ public final class GPUMiner extends Miner implements Runnable {
 	private CLBuffer<Byte> prefixBuffer;
 	private CLBuffer<Byte> outputBuffer;
 
+	private long work;
+
 	private Thread manager;
 	private boolean run = false;
 
@@ -63,7 +68,7 @@ public final class GPUMiner extends Miner implements Runnable {
 			throw new MinerInitException("Failed to build OpenCL program");
 		}
 		this.kernel = program.createKernel("krist_miner_basic");
-		Pointer<Byte> addressPtr = Pointer.allocateBytes(10);
+		Pointer<Byte> addressPtr = Pointer.allocateBytes(10).order(context.getByteOrder());
 		byte[] addressBytes = MinerUtils.getBytes(options.getKristAddress().getAddress());
 		addressPtr.setArray(addressBytes);
 		this.addressBuffer = context.createByteBuffer(Usage.Input, addressPtr);
@@ -72,13 +77,14 @@ public final class GPUMiner extends Miner implements Runnable {
 
 	@Override
 	protected void preMining(String block, int work) {
-		Pointer<Byte> blockPtr = Pointer.allocateBytes(12);
-		Pointer<Byte> prefixPtr = Pointer.allocateBytes(2);
+		Pointer<Byte> blockPtr = Pointer.allocateBytes(12).order(context.getByteOrder());
+		Pointer<Byte> prefixPtr = Pointer.allocateBytes(2).order(context.getByteOrder());
 		blockPtr.setArray(MinerUtils.getBytes(block));
 		prefixPtr.setArray(MinerUtils.getBytes(MinerFactory.generatePrefix()));
 		blockBuffer = context.createByteBuffer(Usage.Input, blockPtr);
 		prefixBuffer = context.createByteBuffer(Usage.Input, prefixPtr);
 		outputBuffer = context.createByteBuffer(Usage.Output, 34);
+		this.work = work;
 	}
 
 	@Override
@@ -132,8 +138,23 @@ public final class GPUMiner extends Miner implements Runnable {
 
 	@Override
 	public void run() {
+		long base = 0;
+		kernel.setArgs(addressBuffer, blockBuffer, prefixBuffer, base, work, outputBuffer);
 		while (run) {
-
+			CLEvent mine = kernel.enqueueNDRange(queue, workSize);
+			Pointer<Byte> outputPtr = outputBuffer.read(queue, mine);
+			mine.release();
+			hashes += workSize[0];
+			base += workSize[0];
+			if (outputPtr.getByteAtIndex(0) != 0 && run) {
+				System.out.println("Solved");
+				char[] sol = MinerUtils.getChars(outputPtr.getBytes());
+				Solution s = new Solution(new String(Arrays.copyOfRange(sol, 0, 10)),
+						new String(Arrays.copyOfRange(sol, 10, 22)), new String(Arrays.copyOfRange(sol, 22, 34)));
+				solved(s);
+				break;
+			}
+			kernel.setArg(3, base);
 		}
 	}
 }

@@ -16,13 +16,13 @@ public class Solution {
 
 	// TODO: Implement checking of solution validity in constructors
 
-	public Solution(String block, KristAddress address, String nonce) {
+	public Solution(KristAddress address, String block, String nonce) {
 		this.block = block;
 		this.address = address;
 		this.nonce = nonce;
 	}
 
-	public Solution(String block, String address, String nonce) {
+	public Solution(String address, String block, String nonce) {
 		this.block = block;
 		this.address = KristAddress.auto(address);
 		this.nonce = nonce;
@@ -38,6 +38,11 @@ public class Solution {
 
 	public String getNonce() {
 		return nonce;
+	}
+
+	@Override
+	public String toString() {
+		return address + block + nonce;
 	}
 
 }

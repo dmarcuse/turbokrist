@@ -5,8 +5,11 @@ import java.util.Map;
 import java.util.Random;
 
 import com.nativelibs4java.opencl.CLDevice;
+import com.nativelibs4java.opencl.CLDevice.Type;
 import com.nativelibs4java.opencl.CLPlatform;
 import com.nativelibs4java.opencl.JavaCL;
+
+import me.apemanzilla.krist.turbokrist.MinerOptions;
 
 /**
  * Used to create {@link me.apemanzilla.krist.turbokrist.miners.Miner Miner}
@@ -47,9 +50,14 @@ public class MinerFactory {
 	 * @throws MinerInitException
 	 *             When there is a problem creating the miner.
 	 */
-	public static Miner createMiner(CLDevice dev) throws MinerInitException {
-		// TODO
-		return null;
+	public static Miner createMiner(CLDevice dev, MinerOptions options) throws MinerInitException {
+		if (!isCompatible(dev))
+			throw new MinerInitException(String.format("Device %s is incompatible.", dev.getName().trim()));
+		if (dev.getType().contains(Type.GPU)) {
+			return new GPUMiner(dev, options);
+		} else {
+			throw new MinerInitException(String.format("Cannot create miner for device %s.", dev.getName().trim()));
+		}
 	}
 
 	/**
