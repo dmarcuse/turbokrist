@@ -20,11 +20,10 @@ import me.apemanzilla.krist.turbokrist.opencl.ProgramBuilder;
 
 /**
  * Used to mine Krist with graphics processing hardware at an accelerated rate.
- * This class should not be initialized directly, but instead through
- * {@link me.apemanzilla.krist.turbokrist.miners.MinerFactory MinerFactory}
+ * This class should not be initialized directly, but instead through {@link
+ * me.apemanzilla.krist.turbokrist.miners.MinerFactory MinerFactory}
  * 
- * @see Miner
- * @author apemanzilla
+ * @see Miner @author apemanzilla
  *
  */
 public final class GPUMiner extends Miner implements Runnable {
@@ -49,12 +48,10 @@ public final class GPUMiner extends Miner implements Runnable {
 
 	/**
 	 * Creates a GPUMiner object. This constructor should not be used - you
-	 * should instead use
-	 * {@link me.apemanzilla.krist.turbokrist.miners.MinerFactor MinerFactory}.
+	 * should instead use {@link
+	 * me.apemanzilla.krist.turbokrist.miners.MinerFactor MinerFactory}.
 	 * 
-	 * @param dev
-	 * @param options
-	 * @throws MinerInitException
+	 * @param dev @param options @throws MinerInitException
 	 */
 	GPUMiner(CLDevice dev, MinerOptions options) throws MinerInitException {
 		this.context = dev.getPlatform().createContext(null, new CLDevice[] { dev });

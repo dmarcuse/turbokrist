@@ -6,8 +6,7 @@ import java.text.DecimalFormat;
  * Contains code to assist Krist mining Some of this code is taken from sci4me's
  * <a href="https://github.com/sci4me/skristminer">skristminer</a>
  * 
- * @author apemanzilla
- * @author sci4me
+ * @author apemanzilla @author sci4me
  */
 public final class MinerUtils {
 

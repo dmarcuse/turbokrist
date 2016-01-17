@@ -29,8 +29,7 @@ public class NodeState {
 	 * Creates a {@code NodeState} daemon, which will monitor for block and work
 	 * value changes.
 	 * 
-	 * @param refreshRate
-	 *            How often to send requests.
+	 * @param refreshRate How often to send requests.
 	 */
 	public NodeState(final int refreshRate) {
 		daemon = new Thread(new Runnable() {
@@ -113,15 +112,13 @@ public class NodeState {
 
 	/**
 	 * Adds a {@link me.apemanzilla.krist.state.NodeStateListener
-	 * NodeStateListener}.
-	 * {@link me.apemanzilla.krist.state.NodeStateListener#stateChanged(String, long)
+	 * NodeStateListener}. {@link
+	 * me.apemanzilla.krist.state.NodeStateListener#stateChanged(String, long)
 	 * NodeStateListener.stateChanged} will be invoked whenever the block or
 	 * work changes.
 	 * 
-	 * @param nsl
-	 *            An object that implements
-	 *            {@link me.apemanzilla.krist.state.NodeStateListener
-	 *            NodeStateListener}
+	 * @param nsl An object that implements {@link
+	 * me.apemanzilla.krist.state.NodeStateListener NodeStateListener}
 	 */
 	public void addListener(NodeStateListener nsl) {
 		listeners.add(nsl);

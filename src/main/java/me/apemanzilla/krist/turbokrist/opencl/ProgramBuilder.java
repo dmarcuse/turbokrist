@@ -36,7 +36,7 @@ public class ProgramBuilder {
 	 * Gets an array of the files to be included in the program.
 	 * 
 	 * @return A 'safe' array containing the files to be included. Changes to
-	 *         this array will not affect the program.
+	 * this array will not affect the program.
 	 */
 	public String[] getFiles() {
 		return (String[]) files.toArray();
@@ -55,7 +55,7 @@ public class ProgramBuilder {
 	 * Gets an array of the options to be used when building the program.
 	 * 
 	 * @return A 'safe' array containing the build options to be used. Changes
-	 *         to this array will not affect the output.
+	 * to this array will not affect the output.
 	 */
 	public String[] getBuildOptions() {
 		return (String[]) buildOptions.toArray();
@@ -64,10 +64,7 @@ public class ProgramBuilder {
 	/**
 	 * Adds a macro to be defined when building the program.
 	 * 
-	 * @param name
-	 *            The macro name.
-	 * @param value
-	 *            The macro value.
+	 * @param name The macro name. @param value The macro value.
 	 */
 	public void defineMacro(String name, Object value) {
 		macros.put(name, value);
@@ -76,9 +73,7 @@ public class ProgramBuilder {
 	/**
 	 * Builds and returns the program for a {@code CLContext}.
 	 * 
-	 * @param context
-	 * @return
-	 * @throws ProgramBuildException
+	 * @param context @return @throws ProgramBuildException
 	 */
 	public CLProgram build(CLContext context) throws ProgramBuildException {
 		// load raw code

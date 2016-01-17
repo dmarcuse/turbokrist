@@ -1,8 +1,8 @@
 package me.apemanzilla.krist.turbokrist.miners;
 
 /**
- * Thrown when there is a problem creating a
- * {@link me.apemanzilla.krist.turbokrist.miners.Miner Miner} object.
+ * Thrown when there is a problem creating a {@link
+ * me.apemanzilla.krist.turbokrist.miners.Miner Miner} object.
  * 
  * @author apemanzilla
  *

@@ -42,10 +42,7 @@ public abstract class Miner {
 	/**
 	 * Tells the miner to begin mining.
 	 * 
-	 * @param block
-	 *            The previous block in the chain.
-	 * @param work
-	 *            The work value.
+	 * @param block The previous block in the chain. @param work The work value.
 	 */
 	public void start(String block, int work) {
 		hashes = 0;
@@ -86,8 +83,7 @@ public abstract class Miner {
 	/**
 	 * Gets the solution that the miner has produced.
 	 * 
-	 * @see Solution
-	 * @return The solution produced by the miner.
+	 * @see Solution @return The solution produced by the miner.
 	 */
 	public abstract Solution getSolution();
 
@@ -116,7 +112,7 @@ public abstract class Miner {
 	 * Gets the average hash rate since this method was last called.
 	 * 
 	 * @return The average hash rate of this miner since this method was last
-	 *         called, in hashes per second.
+	 * called, in hashes per second.
 	 */
 	public double getRecentHashrate() {
 		if (hashes == 0 || startTime == 0)

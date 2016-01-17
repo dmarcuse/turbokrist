@@ -42,13 +42,10 @@ public class MinerFactory {
 	 * Creates a {@link me.apemanzilla.krist.turbokrist.miners.Miner Miner}
 	 * object which can be used for mining Krist
 	 * 
-	 * @param dev
-	 *            The {@link com.nativelibs4java.opencl.CLDevice CLDevice} to be
-	 *            used for mining.
-	 * @return A {@link me.apemanzilla.krist.turbokrist.miners.Miner Miner}
-	 *         object.
-	 * @throws MinerInitException
-	 *             When there is a problem creating the miner.
+	 * @param dev The {@link com.nativelibs4java.opencl.CLDevice CLDevice} to be
+	 * used for mining. @return A {@link
+	 * me.apemanzilla.krist.turbokrist.miners.Miner Miner} object. @throws
+	 * MinerInitException When there is a problem creating the miner.
 	 */
 	public static Miner createMiner(CLDevice dev, MinerOptions options) throws MinerInitException {
 		if (!isCompatible(dev))
@@ -68,9 +65,8 @@ public class MinerFactory {
 	}
 
 	/**
-	 * @param dev
-	 *            A CLDevice
-	 * @return Whether the given CLDevice can be used to mine Krist
+	 * @param dev A CLDevice @return Whether the given CLDevice can be used to
+	 * mine Krist
 	 */
 	public static boolean isCompatible(CLDevice dev) {
 		return dev.getType().contains(CLDevice.Type.GPU);
@@ -81,9 +77,7 @@ public class MinerFactory {
 	 * model, vendor, driver, and OpenCL profile, so it may be the same for two
 	 * of the same devices.
 	 * 
-	 * @param dev
-	 *            The CLDevice
-	 * @return The hashcode of the CLDevice's signature
+	 * @param dev The CLDevice @return The hashcode of the CLDevice's signature
 	 */
 	public static int getSignature(CLDevice dev) {
 		return dev.createSignature().hashCode();

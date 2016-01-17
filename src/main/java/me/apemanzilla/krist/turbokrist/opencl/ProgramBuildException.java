@@ -1,8 +1,8 @@
 package me.apemanzilla.krist.turbokrist.opencl;
 
 /**
- * Thrown when a problem is encountered using
- * {@link me.apemanzilla.krist.turbokrist.opencl.ProgramBuilder ProgramBuilder}.
+ * Thrown when a problem is encountered using {@link
+ * me.apemanzilla.krist.turbokrist.opencl.ProgramBuilder ProgramBuilder}.
  * 
  * @author apemanzilla
  *
