@@ -50,6 +50,7 @@ public abstract class Miner {
 	 * @param block The previous block in the chain. @param work The work value.
 	 */
 	public void start(String block, int work) {
+		block = block.trim();
 		hashes = 0;
 		startTime = 0;
 		prevHashes = 0;

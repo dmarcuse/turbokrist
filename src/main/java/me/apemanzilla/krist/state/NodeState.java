@@ -72,6 +72,7 @@ public class NodeState {
 	 * NodeStateListener}s that the state has changed.
 	 */
 	private void notifyListeners() {
+		notifyAll();
 		synchronized (block_lock) {
 			synchronized (work_lock) {
 				for (NodeStateListener l : listeners) {
