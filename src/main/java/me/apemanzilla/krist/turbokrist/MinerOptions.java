@@ -21,6 +21,8 @@ public class MinerOptions {
 
 	private Set<Integer> devices = new HashSet<Integer>();
 
+	private int stateRefreshRate = 2000;
+
 	public KristAddress getKristAddress() {
 		return address;
 	}
@@ -92,6 +94,14 @@ public class MinerOptions {
 			out.add(devices.get(i));
 		}
 		return out;
+	}
+
+	public int getStateRefreshRate() {
+		return stateRefreshRate;
+	}
+
+	public void setStateRefreshRate(int stateRefreshRate) {
+		this.stateRefreshRate = stateRefreshRate;
 	}
 
 }

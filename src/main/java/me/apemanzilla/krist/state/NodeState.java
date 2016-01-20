@@ -22,9 +22,7 @@ public class NodeState {
 	private Thread daemon;
 
 	private String block;
-	private Object block_lock = new Object();
 	private long work;
-	private Object work_lock = new Object();
 
 	/**
 	 * Creates a {@code NodeState} daemon, which will monitor for block and work
@@ -38,22 +36,18 @@ public class NodeState {
 			public void run() {
 				while (true) {
 					try {
-						String newBlock = KristAPI.getBlock();
-						if (block == null || !block.equals(block)) {
+						String newBlock = KristAPI.getBlock().trim();
+						if (block == null || !block.equals(newBlock)) {
 							// block has changed
 							long newWork = KristAPI.getWork();
 							if (work == 0 || newWork != work) {
 								// work has changed
-								synchronized (work_lock) {
-									work = newWork;
-								}
+								work = newWork;
 							}
-							synchronized (block_lock) {
-								block = newBlock;
-							}
+							block = newBlock;
 							notifyListeners();
-							Thread.sleep(refreshRate);
 						}
+						Thread.sleep(refreshRate);
 					} catch (SyncnodeDownException e) {
 
 					} catch (RemoteErrorException e) {
@@ -73,12 +67,8 @@ public class NodeState {
 	 * NodeStateListener}s that the state has changed.
 	 */
 	private void notifyListeners() {
-		synchronized (block_lock) {
-			synchronized (work_lock) {
-				for (NodeStateListener l : listeners) {
-					l.stateChanged(block, work);
-				}
-			}
+		for (NodeStateListener l : listeners) {
+			l.stateChanged(block, work);
 		}
 	}
 
@@ -95,9 +85,7 @@ public class NodeState {
 	 * @return The block as a 12-character String.
 	 */
 	public String getBlock() {
-		synchronized (block_lock) {
-			return block;
-		}
+		return block;
 	}
 
 	/**
@@ -106,9 +94,7 @@ public class NodeState {
 	 * @return The work value as a long.
 	 */
 	public long getWork() {
-		synchronized (work_lock) {
-			return work;
-		}
+		return work;
 	}
 
 	/**
