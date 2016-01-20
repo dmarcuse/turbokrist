@@ -38,7 +38,7 @@ public class Controller implements MinerListener, NodeStateListener {
 						e.printStackTrace();
 					}
 					if (miners.isMining()) {
-						System.out.format("Speed - %s\n Blocks - %d",
+						System.out.format("Speed - %s Blocks - %d\n",
 								MinerUtils.formatSpeed((long) miners.getRecentHashrate()), blocks);
 					}
 				}
