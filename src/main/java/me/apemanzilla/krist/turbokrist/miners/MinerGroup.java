@@ -47,10 +47,10 @@ public class MinerGroup extends Miner implements MinerListener {
 
 	@Override
 	public void start(String block, int work) {
-		mining = true;
 		for (Miner m : miners) {
 			m.start(block, work);
 		}
+		mining = true;
 	}
 
 	@Override
@@ -99,6 +99,9 @@ public class MinerGroup extends Miner implements MinerListener {
 		for (Miner m : miners) {
 			hr += m.getAverageHashrate();
 		}
+		if (hr > Math.pow(10, 15)) {
+			return 0;
+		}
 		return hr;
 	}
 
@@ -107,6 +110,9 @@ public class MinerGroup extends Miner implements MinerListener {
 		double hr = 0;
 		for (Miner m : miners) {
 			hr += m.getRecentHashrate();
+		}
+		if (hr > Math.pow(10, 12)) {
+			return 0;
 		}
 		return hr;
 	}

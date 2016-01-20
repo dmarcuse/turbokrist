@@ -152,12 +152,14 @@ public final class GPUMiner extends Miner implements Runnable {
 			hashes += workSize[0];
 			base += workSize[0];
 			if (outputPtr.getByteAtIndex(0) != 0 && run) {
-				System.out.println("Solved");
 				char[] sol = MinerUtils.getChars(outputPtr.getBytes());
-				Solution s = new Solution(new String(Arrays.copyOfRange(sol, 0, 10)),
-						new String(Arrays.copyOfRange(sol, 10, 22)), new String(Arrays.copyOfRange(sol, 22, 34)));
-				solved(s);
-				break;
+				long score = MinerUtils.hashToLong(MinerUtils.digest(MinerUtils.getBytes(new String(sol))));
+				if (score <= work) {
+					Solution s = new Solution(new String(Arrays.copyOfRange(sol, 0, 10)),
+							new String(Arrays.copyOfRange(sol, 10, 22)), new String(Arrays.copyOfRange(sol, 22, 34)));
+					solved(s);
+					break;
+				}
 			}
 			kernel.setArg(3, base);
 		}
