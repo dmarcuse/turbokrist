@@ -1,5 +1,6 @@
 package me.apemanzilla.krist.state;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.apemanzilla.kristapi.KristAPI;
@@ -16,7 +17,7 @@ import me.apemanzilla.kristapi.exceptions.SyncnodeDownException;
  */
 public class NodeState {
 
-	public List<NodeStateListener> listeners;
+	public List<NodeStateListener> listeners = new ArrayList<NodeStateListener>();
 
 	private Thread daemon;
 
@@ -72,7 +73,6 @@ public class NodeState {
 	 * NodeStateListener}s that the state has changed.
 	 */
 	private void notifyListeners() {
-		notifyAll();
 		synchronized (block_lock) {
 			synchronized (work_lock) {
 				for (NodeStateListener l : listeners) {
