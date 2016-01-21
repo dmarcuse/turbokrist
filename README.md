@@ -1,5 +1,5 @@
 # turbokrist
-The first-ever GPU accelerated Krist miner - using JavaCL.
+The first-ever GPU accelerated Krist miner - using JavaCL. The original project, [JCLMiner](https://github.com/apemanzilla/JCLMiner), was abandoned in favor of this rewrite for various reasons.
 
 ## Building
 
