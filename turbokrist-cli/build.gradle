@@ -14,3 +14,11 @@ dependencies {
 	compile 'commons-lang:commons-lang:2.6'
 	compile rootProject
 }
+
+jar {
+	manifest {
+		attributes 'Main-Class': 'me.apemanzilla.krist.turbokrist.cli.Launcher'
+	}
+
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
