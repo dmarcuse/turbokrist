@@ -2,6 +2,12 @@
 
 typedef uchar byte;
 
+// union to convert 4 bytes to an int or vice versa
+union byte_int_converter {
+	uint val;
+	byte bytes[4];
+};
+
 // macro so i can change it later
 #define mult_add(a,b,c) (a * b + c)
 
@@ -60,33 +66,39 @@ __constant uint K[64] = {
 
 void digest(byte* data, uint inputLen, byte* hash) {
 	/* init vars */
-	uint h0, h1, h2, h3, h4, h5, h6, h7;
-	uint a, b, c, d, e, f, g, h, i, l, t1, t2, m[64] = {0};
+	union byte_int_converter h0, h1, h2, h3, h4, h5, h6, h7, temp;
+	uint a, b, c, d, e, f, g, h, i, t1, t2, m[64] = {0};
 	PAD(data, inputLen);
 	/* init hash state */
-	h0 = 0x6a09e667;
-	h1 = 0xbb67ae85;
-	h2 = 0x3c6ef372;
-	h3 = 0xa54ff53a;
-	h4 = 0x510e527f;
-	h5 = 0x9b05688c;
-	h6 = 0x1f83d9ab;
-	h7 = 0x5be0cd19;
+	h0.val = 0x6a09e667;
+	h1.val = 0xbb67ae85;
+	h2.val = 0x3c6ef372;
+	h3.val = 0xa54ff53a;
+	h4.val = 0x510e527f;
+	h5.val = 0x9b05688c;
+	h6.val = 0x1f83d9ab;
+	h7.val = 0x5be0cd19;
 	/* transform */
 #pragma unroll
-	for (i = 0; i < 16; i++)
-		m[i] = (data[mult_add(i,4,0)] << 24) | (data[mult_add(i,4,1)] << 16) | (data[mult_add(i,4,2)] << 8) | (data[mult_add(i,4,3)]);
+	for (i = 0; i < 16; i++) {
+		//m[i] = (data[mult_add(i,4,0)] << 24) | (data[mult_add(i,4,1)] << 16) | (data[mult_add(i,4,2)] << 8) | (data[mult_add(i,4,3)]);
+		temp.bytes[3] = data[i*4];
+		temp.bytes[2] = data[i*4+1];
+		temp.bytes[1] = data[i*4+2];
+		temp.bytes[0] = data[i*4+3];
+		m[i] = temp.val;
+	}
 #pragma unroll
 	for (i = 16; i < 64; ++i)
 		m[i] = SIG1(m[i - 2]) + m[i - 7] + SIG0(m[i - 15]) + m[i - 16];
-	a = h0;
-	b = h1;
-	c = h2;
-	d = h3;
-	e = h4;
-	f = h5;
-	g = h6;
-	h = h7;
+	a = h0.val;
+	b = h1.val;
+	c = h2.val;
+	d = h3.val;
+	e = h4.val;
+	f = h5.val;
+	g = h6.val;
+	h = h7.val;
 #pragma unroll
 	for (i = 0; i < 64; ++i) {
 		t1 = h + EP1(e) + CH(e,f,g) + K[i] + m[i];
@@ -100,27 +112,52 @@ void digest(byte* data, uint inputLen, byte* hash) {
 		b = a;
 		a = t1 + t2;
 	}
-	h0 += a;
-	h1 += b;
-	// only first 2 hash values needed.
-	h2 += c;
-	h3 += d;
-	h4 += e;
-	h5 += f;
-	h6 += g;
-	h7 += h;
+	h0.val += a;
+	h1.val += b;
+	h2.val += c;
+	h3.val += d;
+	h4.val += e;
+	h5.val += f;
+	h6.val += g;
+	h7.val += h;
 	/* finish */
-#pragma unroll
-	for (i = 0; i < 4; ++i) {
-		l = 24 - i * 8;
-		hash[i]      = (h0 >> l) & 0x000000ff;
-		hash[i + 4]  = (h1 >> l) & 0x000000ff;
-		// only the first 6 bytes are needed.
-		hash[i + 8]  = (h2 >> l) & 0x000000ff;
-		hash[i + 12] = (h3 >> l) & 0x000000ff;
-		hash[i + 16] = (h4 >> l) & 0x000000ff;
-		hash[i + 20] = (h5 >> l) & 0x000000ff;
-		hash[i + 24] = (h6 >> l) & 0x000000ff;
-		hash[i + 28] = (h7 >> l) & 0x000000ff;
-	}
+	hash[0] = h0.bytes[3];
+	hash[1] = h0.bytes[2];
+	hash[2] = h0.bytes[1];
+	hash[3] = h0.bytes[0];
+
+	hash[4] = h1.bytes[3];
+	hash[5] = h1.bytes[2];
+	hash[6] = h1.bytes[1];
+	hash[7] = h1.bytes[0];
+
+	hash[8] = h2.bytes[3];
+	hash[9] = h2.bytes[2];
+	hash[10] = h2.bytes[1];
+	hash[11] = h2.bytes[0];
+
+	hash[12] = h3.bytes[3];
+	hash[13] = h3.bytes[2];
+	hash[14] = h3.bytes[1];
+	hash[15] = h3.bytes[0];
+
+	hash[16] = h4.bytes[3];
+	hash[17] = h4.bytes[2];
+	hash[18] = h4.bytes[1];
+	hash[19] = h4.bytes[0];
+
+	hash[20] = h5.bytes[3];
+	hash[21] = h5.bytes[2];
+	hash[22] = h5.bytes[1];
+	hash[23] = h5.bytes[0];
+
+	hash[24] = h6.bytes[3];
+	hash[25] = h6.bytes[2];
+	hash[26] = h6.bytes[1];
+	hash[27] = h6.bytes[0];
+
+	hash[28] = h7.bytes[3];
+	hash[29] = h7.bytes[2];
+	hash[30] = h7.bytes[1];
+	hash[31] = h7.bytes[0];
 }
