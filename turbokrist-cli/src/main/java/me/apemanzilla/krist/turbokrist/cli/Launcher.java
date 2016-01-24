@@ -44,6 +44,8 @@ public class Launcher {
 		options.addOption(Option.builder("d").longOpt("devices").hasArg().argName("devices")
 				.desc("Specify which devices to use by ID.").build());
 		options.addOption(Option.builder("v").longOpt("verbose").desc("Enable verbose logging").build());
+		options.addOption(Option.builder("r").longOpt("refresh-rate").hasArg().argName("milliseconds")
+				.desc("Sets the refresh rate for checking for block/work changes").build());
 		options.addOption(Option.builder("?").longOpt("help").desc("Show command-line usage").build());
 	}
 
@@ -115,6 +117,11 @@ public class Launcher {
 				int work = Integer.parseInt(size.split(":")[1]);
 				options.setWorkSize(sig, work);
 			}
+		}
+		if (cmd.hasOption("r")) {
+			if (verbose)
+				System.out.println("Setting refresh rate.");
+			options.setStateRefreshRate(Integer.parseInt(cmd.getOptionValue("r")));
 		}
 		System.out.println("Starting miner...");
 		Controller controller = new Controller(options);
