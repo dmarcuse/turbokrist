@@ -1,5 +1,7 @@
 package me.apemanzilla.krist.turbokrist.miners;
 
+import me.apemanzilla.krist.turbokrist.MinerOptions;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +94,8 @@ public abstract class Miner {
 	 * @see Solution @return The solution produced by the miner.
 	 */
 	public abstract Solution getSolution();
+
+	public abstract void reset();
 
 	public void addListener(MinerListener ml) {
 		listeners.add(ml);

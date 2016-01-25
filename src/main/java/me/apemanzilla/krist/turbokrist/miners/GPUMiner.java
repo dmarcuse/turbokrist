@@ -1,22 +1,14 @@
 package me.apemanzilla.krist.turbokrist.miners;
 
-import java.util.Arrays;
-
-import org.bridj.Pointer;
-
-import com.nativelibs4java.opencl.CLBuffer;
-import com.nativelibs4java.opencl.CLContext;
-import com.nativelibs4java.opencl.CLDevice;
-import com.nativelibs4java.opencl.CLEvent;
-import com.nativelibs4java.opencl.CLKernel;
-import com.nativelibs4java.opencl.CLProgram;
-import com.nativelibs4java.opencl.CLQueue;
+import com.nativelibs4java.opencl.*;
 import com.nativelibs4java.opencl.CLMem.Usage;
-
 import me.apemanzilla.krist.turbokrist.MinerOptions;
 import me.apemanzilla.krist.turbokrist.MinerUtils;
 import me.apemanzilla.krist.turbokrist.opencl.ProgramBuildException;
 import me.apemanzilla.krist.turbokrist.opencl.ProgramBuilder;
+import org.bridj.Pointer;
+
+import java.util.Arrays;
 
 /**
  * Used to mine Krist with graphics processing hardware at an accelerated rate.
@@ -43,6 +35,10 @@ public final class GPUMiner extends Miner implements Runnable {
 
 	private long work;
 
+	private int workCoefficient;
+	private boolean stopOnSolution;
+	private long savedBase;
+
 	private Thread manager;
 	private boolean run = false;
 
@@ -51,7 +47,7 @@ public final class GPUMiner extends Miner implements Runnable {
 	/**
 	 * Creates a GPUMiner object. This constructor should not be used - you
 	 * should instead use {@link
-	 * me.apemanzilla.krist.turbokrist.miners.MinerFactor MinerFactory}.
+	 * me.apemanzilla.krist.turbokrist.miners.MinerFactory MinerFactory}.
 	 * 
 	 * @param dev @param options @throws MinerInitException
 	 */
@@ -73,6 +69,8 @@ public final class GPUMiner extends Miner implements Runnable {
 		addressPtr.setArray(addressBytes);
 		this.addressBuffer = context.createByteBuffer(Usage.Input, addressPtr);
 		this.workSize = new int[] { options.getWorkSize(MinerFactory.generateSignature(dev)) };
+		this.workCoefficient = options.getWorkCoefficient();
+		this.stopOnSolution = options.getStopOnSolution();
 	}
 
 	@Override
@@ -129,6 +127,11 @@ public final class GPUMiner extends Miner implements Runnable {
 	}
 
 	@Override
+	public void reset() {
+		this.savedBase = 0;
+	}
+
+	@Override
 	public void destroy() {
 		stop();
 		destroyed = true;
@@ -144,7 +147,12 @@ public final class GPUMiner extends Miner implements Runnable {
 	@Override
 	public void run() {
 		long base = 0;
-		kernel.setArgs(addressBuffer, blockBuffer, prefixBuffer, base, work, outputBuffer);
+
+		if(!this.stopOnSolution) {
+			base = this.savedBase;
+		}
+
+		kernel.setArgs(addressBuffer, blockBuffer, prefixBuffer, base, work, workCoefficient, outputBuffer);
 		while (run) {
 			CLEvent mine = kernel.enqueueNDRange(queue, workSize);
 			Pointer<Byte> outputPtr = outputBuffer.read(queue, mine);
@@ -154,10 +162,14 @@ public final class GPUMiner extends Miner implements Runnable {
 			if (outputPtr.getByteAtIndex(0) != 0 && run) {
 				char[] sol = MinerUtils.getChars(outputPtr.getBytes());
 				long score = MinerUtils.hashToLong(MinerUtils.digest(MinerUtils.getBytes(new String(sol))));
-				if (score <= work) {
+				if (score <= work * workCoefficient) {
 					Solution s = new Solution(new String(Arrays.copyOfRange(sol, 0, 10)),
 							new String(Arrays.copyOfRange(sol, 10, 22)), new String(Arrays.copyOfRange(sol, 22, 34)));
 					solved(s);
+
+					if(!this.stopOnSolution) {
+						this.savedBase = base;
+					}
 					break;
 				}
 			}

@@ -1,17 +1,11 @@
 package me.apemanzilla.krist.turbokrist;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import com.nativelibs4java.opencl.CLDevice;
-
 import me.apemanzilla.krist.turbokrist.miners.MinerFactory;
 import me.apemanzilla.kristapi.types.KristAddress;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class MinerOptions {
 
@@ -23,6 +17,9 @@ public class MinerOptions {
 
 	private int stateRefreshRate = 2000;
 
+	private int workCoefficient = 1;
+	private boolean stopOnSolution = true;
+
 	public KristAddress getKristAddress() {
 		return address;
 	}
@@ -33,6 +30,10 @@ public class MinerOptions {
 
 	public void setWorkSize(int signature, int size) {
 		workSizes.put(signature, size);
+	}
+
+	public void setWorkCoefficient(int workCoefficient) {
+		this.workCoefficient = workCoefficient;
 	}
 
 	public int getWorkSize(int signature) {
@@ -104,4 +105,15 @@ public class MinerOptions {
 		this.stateRefreshRate = stateRefreshRate;
 	}
 
+	public int getWorkCoefficient() {
+		return workCoefficient;
+	}
+
+	public boolean getStopOnSolution() {
+		return stopOnSolution;
+	}
+
+	public void setStopOnSolution(boolean stopOnSolution) {
+		this.stopOnSolution = stopOnSolution;
+	}
 }

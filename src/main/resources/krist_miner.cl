@@ -16,6 +16,7 @@ __kernel void krist_miner_basic(
 		__global const byte* prefix,	// 2 chars
 		const long base,				// convert to 10 chars
 		const long work,
+		const int workCoefficient,
 		__global byte* output) {
 	int id = get_global_id(0);
 	long nonce = id + base;
@@ -39,7 +40,7 @@ __kernel void krist_miner_basic(
 	}
 	digest(input, 34, hashed);
 	long score = hashToLong(hashed);
-	if (score < work) {
+	if (score < work * workCoefficient) {
 #pragma unroll
 		for (int i = 0; i < 10; i++) {
 			output[i] = address[i];
