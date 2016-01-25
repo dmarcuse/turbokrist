@@ -30,11 +30,10 @@ public class Controller implements MinerListener, NodeStateListener {
 
 	private void printStatus() {
 		String recentSpeedStr = StringUtils.center("Now " + MinerUtils.formatSpeed((long) miners.getRecentHashrate()), 19);
-		String avgSpeedStr = StringUtils.center("Avg " + MinerUtils.formatSpeed((long) miners.getAverageHashrate()), 19);
 		String blocksStr = StringUtils.center(blocks + " blocks", 15);
 		double blocksPerMinute = (double) blocks / ((double) (System.currentTimeMillis() - startTime) / 60000);
 		String bpmStr = StringUtils.center(String.format("%.2f blocks/minute", blocksPerMinute), 25);
-		System.out.format("%s|%s|%s|%s\n", recentSpeedStr, avgSpeedStr, blocksStr, bpmStr);
+		System.out.format("%s|%s|%s\n", recentSpeedStr, blocksStr, bpmStr);
 	}
 	
 	public Controller(MinerOptions options) throws MinerInitException {
@@ -77,37 +76,38 @@ public class Controller implements MinerListener, NodeStateListener {
 				miners.stop();
 			}
 			System.out.format("Mining for block '%s' - work %d.\n", newBlock, newWork);
-			miners.start(newBlock, (int) newWork);
+			miners.start(newBlock, newWork);
 		}
 	}
 
 	@Override
 	public void blockSolved(Solution sol) {
-		synchronized (miners) {
-			miners.stop();
-			System.out.format("Submitting solution '%s' > ", sol.getNonce());
-			try {
-				if (options.getKristAddress().submitBlock(sol.getNonce())) {
-					System.out.println("Success!");
-					blocks++;
-					autoRestart = new Timer();
-					autoRestart.schedule(new TimerTask() {
-						@Override
-						public void run() {
-							miners.start(state.getBlock(), (int) state.getWork());
-						}
-						
-					}, 15000);
-				} else {
-					System.out.println("Rejected.");
-					miners.start(state.getBlock(), (int) state.getWork());
+		if (sol.getBlock().equals(state.getBlock())) {
+			synchronized (miners) {
+				miners.stop();
+				System.out.format("Submitting solution '%s' > ", sol.getNonce());
+				try {
+					if (options.getKristAddress().submitBlock(sol.getNonce())) {
+						System.out.println("Success!");
+						blocks++;
+						autoRestart = new Timer();
+						autoRestart.schedule(new TimerTask() {
+							@Override
+							public void run() {
+								miners.start(state.getBlock(), state.getWork());
+							}
+							
+						}, 15000);
+					} else {
+						System.out.println("Rejected.");
+						miners.start(state.getBlock(), state.getWork());
+					}
+				} catch (SyncnodeDownException | InvalidNonceException e) {
+					System.out.println("Error!");
+					e.printStackTrace();
+					miners.start(state.getBlock(), state.getWork());
 				}
-			} catch (SyncnodeDownException | InvalidNonceException e) {
-				System.out.println("Error!");
-				e.printStackTrace();
-				miners.start(state.getBlock(), (int) state.getWork());
 			}
 		}
 	}
-
 }

@@ -37,19 +37,19 @@ public abstract class Miner {
 	 * Internal method to be run before hash rate counter is started - should be
 	 * used for any initialization.
 	 */
-	protected abstract void preMining(String block, int work);
+	protected abstract void preMining(String block, long work);
 
 	/**
 	 * Internal method to start mining.
 	 */
-	protected abstract void startMining(String block, int work);
+	protected abstract void startMining(String block, long work);
 
 	/**
 	 * Tells the miner to begin mining.
 	 * 
 	 * @param block The previous block in the chain. @param work The work value.
 	 */
-	public void start(String block, int work) {
+	public void start(String block, long work) {
 		block = block.trim();
 		hashes = 0;
 		startTime = 0;

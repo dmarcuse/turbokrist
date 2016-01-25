@@ -84,7 +84,7 @@ public final class GPUMiner extends Miner implements Runnable {
 	}
 
 	@Override
-	protected void preMining(String block, int work) {
+	protected void preMining(String block, long work) {
 		Pointer<Byte> blockPtr = Pointer.allocateBytes(12).order(context.getByteOrder());
 		Pointer<Byte> prefixPtr = Pointer.allocateBytes(2).order(context.getByteOrder());
 		blockPtr.setArray(MinerUtils.getBytes(block));
@@ -96,7 +96,7 @@ public final class GPUMiner extends Miner implements Runnable {
 	}
 
 	@Override
-	protected void startMining(String block, int work) {
+	protected void startMining(String block, long work) {
 		if (!destroyed) {
 			manager = new Thread(this);
 			run = true;

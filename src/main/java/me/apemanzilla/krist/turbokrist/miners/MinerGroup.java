@@ -36,17 +36,17 @@ public class MinerGroup extends Miner implements MinerListener {
 	}
 
 	@Override
-	protected void preMining(String block, int work) {
+	protected void preMining(String block, long work) {
 
 	}
 
 	@Override
-	protected void startMining(String block, int work) {
+	protected void startMining(String block, long work) {
 
 	}
 
 	@Override
-	public void start(String block, int work) {
+	public void start(String block, long work) {
 		for (Miner m : miners) {
 			m.start(block, work);
 		}
