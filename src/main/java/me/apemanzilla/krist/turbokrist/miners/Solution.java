@@ -1,6 +1,6 @@
 package me.apemanzilla.krist.turbokrist.miners;
 
-import me.apemanzilla.kristapi.types.KristAddress;
+import me.apemanzilla.krist.api.types.KristAddress;
 
 /**
  * Represents a solution that can be submitted to the Krist syncnode.
@@ -19,12 +19,6 @@ public class Solution {
 	public Solution(KristAddress address, String block, String nonce) {
 		this.block = block;
 		this.address = address;
-		this.nonce = nonce;
-	}
-
-	public Solution(String address, String block, String nonce) {
-		this.block = block;
-		this.address = KristAddress.auto(address);
 		this.nonce = nonce;
 	}
 

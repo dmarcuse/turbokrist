@@ -10,11 +10,15 @@ import java.util.Set;
 
 import com.nativelibs4java.opencl.CLDevice;
 
+import me.apemanzilla.krist.api.KristAPI;
+import me.apemanzilla.krist.api.exceptions.MalformedAddressException;
+import me.apemanzilla.krist.api.types.KristAddress;
 import me.apemanzilla.krist.turbokrist.miners.MinerFactory;
-import me.apemanzilla.kristapi.types.KristAddress;
 
 public class MinerOptions {
 
+	private final KristAPI api;
+	
 	private KristAddress address;
 
 	private Map<Integer, Integer> workSizes = new HashMap<Integer, Integer>();
@@ -27,10 +31,15 @@ public class MinerOptions {
 		return address;
 	}
 
-	public MinerOptions(String address) {
-		this.address = KristAddress.auto(address);
+	public MinerOptions(String address, KristAPI api) throws MalformedAddressException {
+		this.api = api;
+		this.address = api.getAddress(address);
 	}
 
+	public KristAPI getAPI() {
+		return api;
+	}
+	
 	public void setWorkSize(int signature, int size) {
 		workSizes.put(signature, size);
 	}

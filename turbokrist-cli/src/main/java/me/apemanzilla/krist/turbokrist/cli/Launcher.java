@@ -1,5 +1,9 @@
 package me.apemanzilla.krist.turbokrist.cli;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -13,9 +17,12 @@ import org.apache.commons.cli.ParseException;
 
 import com.nativelibs4java.opencl.CLDevice;
 
+import me.apemanzilla.krist.api.KristAPI;
+import me.apemanzilla.krist.api.exceptions.MalformedAddressException;
 import me.apemanzilla.krist.turbokrist.MinerOptions;
 import me.apemanzilla.krist.turbokrist.miners.MinerFactory;
 import me.apemanzilla.krist.turbokrist.miners.MinerInitException;
+import me.apemanzilla.utils.net.HTTPErrorException;
 
 /**
  * Command-line launcher for turbokrist OpenCL miner
@@ -46,6 +53,7 @@ public class Launcher {
 		options.addOption(Option.builder("v").longOpt("verbose").desc("Enable verbose logging").build());
 		options.addOption(Option.builder("r").longOpt("refresh-rate").hasArg().argName("milliseconds")
 				.desc("Sets the refresh rate for checking for block/work changes").build());
+		options.addOption(Option.builder("S").longOpt("syncnode").hasArg().argName("syncnode_url").desc("Specify a custom syncnode URL.").build());
 		options.addOption(Option.builder("?").longOpt("help").desc("Show command-line usage").build());
 	}
 
@@ -89,7 +97,42 @@ public class Launcher {
 			System.out.println("Please specify an address with -h.");
 			System.exit(1);
 		}
-		MinerOptions options = new MinerOptions(cmd.getOptionValue("h"));
+//		KristAPI api = new KristAPI();
+//		MinerOptions options = new MinerOptions(cmd.getOptionValue("h"), api);
+		KristAPI api = null;
+		MinerOptions options = null;
+		if (cmd.hasOption("S")) {
+			try {
+				api = new KristAPI(new URL(cmd.getOptionValue("S")));
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				System.out.println("Invalid syncnode URL!");
+				System.exit(1);
+			}
+		} else {
+			try {
+				api = new KristAPI();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Unknown error!");
+				System.exit(-1);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+				System.out.println("Cannot connect to default syncnode.");
+				System.exit(1);
+			} catch (HTTPErrorException e) {
+				e.printStackTrace();
+				System.out.println("Cannot retrieve syncnode URL.");
+				System.exit(1);
+			}
+		}
+		try {
+			options = new MinerOptions(cmd.getOptionValue("h"), api);
+		} catch (MalformedAddressException e) {
+			e.printStackTrace();
+			System.out.println("Invalid Krist address!");
+			System.exit(1);
+		}
 		if (cmd.hasOption("a")) {
 			if (verbose)
 				System.out.println("Selecting all devices.");

@@ -7,6 +7,8 @@ import java.util.TimerTask;
 
 import org.apache.commons.lang.StringUtils;
 
+import me.apemanzilla.krist.api.exceptions.InvalidNonceException;
+import me.apemanzilla.krist.api.exceptions.SyncnodeDownException;
 import me.apemanzilla.krist.state.NodeState;
 import me.apemanzilla.krist.state.NodeStateListener;
 import me.apemanzilla.krist.turbokrist.MinerOptions;
@@ -17,7 +19,6 @@ import me.apemanzilla.krist.turbokrist.miners.MinerGroup;
 import me.apemanzilla.krist.turbokrist.miners.MinerInitException;
 import me.apemanzilla.krist.turbokrist.miners.MinerListener;
 import me.apemanzilla.krist.turbokrist.miners.Solution;
-import me.apemanzilla.kristapi.exceptions.SyncnodeDownException;
 
 public class Controller implements MinerListener, NodeStateListener {
 
@@ -40,7 +41,7 @@ public class Controller implements MinerListener, NodeStateListener {
 	
 	public Controller(MinerOptions options) throws MinerInitException {
 		this.options = options;
-		state = new NodeState(options.getStateRefreshRate());
+		state = new NodeState(options.getStateRefreshRate(), options.getAPI());
 		state.addListener(this);
 		Miner[] m = MinerFactory.createAll(options).toArray(new Miner[0]);
 		miners = new MinerGroup(m);
@@ -104,7 +105,7 @@ public class Controller implements MinerListener, NodeStateListener {
 					System.out.println("Rejected.");
 					miners.start(state.getBlock(), (int) state.getWork());
 				}
-			} catch (SyncnodeDownException | UnsupportedEncodingException e) {
+			} catch (SyncnodeDownException | UnsupportedEncodingException | InvalidNonceException e) {
 				System.out.println("Error!");
 				e.printStackTrace();
 				miners.start(state.getBlock(), (int) state.getWork());

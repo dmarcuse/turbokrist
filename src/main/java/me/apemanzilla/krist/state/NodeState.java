@@ -3,9 +3,8 @@ package me.apemanzilla.krist.state;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.apemanzilla.kristapi.KristAPI;
-import me.apemanzilla.kristapi.exceptions.RemoteErrorException;
-import me.apemanzilla.kristapi.exceptions.SyncnodeDownException;
+import me.apemanzilla.krist.api.KristAPI;
+import me.apemanzilla.krist.api.exceptions.SyncnodeDownException;
 
 /**
  * Constantly keeps track of the block and work values for Krist. Use with
@@ -17,6 +16,8 @@ import me.apemanzilla.kristapi.exceptions.SyncnodeDownException;
  */
 public class NodeState {
 
+	private final KristAPI api;
+	
 	public List<NodeStateListener> listeners = new ArrayList<NodeStateListener>();
 
 	private Thread daemon;
@@ -30,16 +31,17 @@ public class NodeState {
 	 * 
 	 * @param refreshRate How often to send requests.
 	 */
-	public NodeState(final int refreshRate) {
+	public NodeState(final int refreshRate, KristAPI _api) {
+		this.api = _api;
 		daemon = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				while (true) {
 					try {
-						String newBlock = KristAPI.getBlock().trim();
+						String newBlock = api.getLastBlock().getShortHash();
 						if (block == null || !block.equals(newBlock)) {
 							// block has changed
-							long newWork = KristAPI.getWork();
+							long newWork = api.getWork();
 							if (work == 0 || newWork != work) {
 								// work has changed
 								work = newWork;
@@ -48,12 +50,10 @@ public class NodeState {
 							notifyListeners();
 						}
 						Thread.sleep(refreshRate);
-					} catch (SyncnodeDownException e) {
-
-					} catch (RemoteErrorException e) {
-
 					} catch (InterruptedException e) {
-
+						e.printStackTrace();
+					} catch (SyncnodeDownException e) {
+						e.printStackTrace();
 					}
 				}
 			}

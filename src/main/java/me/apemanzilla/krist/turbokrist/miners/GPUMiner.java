@@ -28,6 +28,8 @@ import me.apemanzilla.krist.turbokrist.opencl.ProgramBuilder;
  */
 public final class GPUMiner extends Miner implements Runnable {
 
+	private final MinerOptions options;
+	
 	private final String deviceName;
 
 	private final CLContext context;
@@ -56,6 +58,7 @@ public final class GPUMiner extends Miner implements Runnable {
 	 * @param dev @param options @throws MinerInitException
 	 */
 	GPUMiner(CLDevice dev, MinerOptions options) throws MinerInitException {
+		this.options = options;
 		this.deviceName = dev.getName().trim();
 		this.context = dev.getPlatform().createContext(null, new CLDevice[] { dev });
 		this.queue = context.createDefaultQueue();
@@ -155,7 +158,7 @@ public final class GPUMiner extends Miner implements Runnable {
 				char[] sol = MinerUtils.getChars(outputPtr.getBytes());
 				long score = MinerUtils.hashToLong(MinerUtils.digest(MinerUtils.getBytes(new String(sol))));
 				if (score <= work) {
-					Solution s = new Solution(new String(Arrays.copyOfRange(sol, 0, 10)),
+					Solution s = new Solution(options.getKristAddress(),
 							new String(Arrays.copyOfRange(sol, 10, 22)), new String(Arrays.copyOfRange(sol, 22, 34)));
 					solved(s);
 					break;
