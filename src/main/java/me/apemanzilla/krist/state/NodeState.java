@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.apemanzilla.krist.api.KristAPI;
 import me.apemanzilla.krist.api.exceptions.SyncnodeDownException;
+import me.apemanzilla.krist.api.types.KristBlock;
 
 /**
  * Constantly keeps track of the block and work values for Krist. Use with
@@ -38,16 +39,19 @@ public class NodeState {
 			public void run() {
 				while (true) {
 					try {
-						String newBlock = api.getLastBlock().getShortHash();
-						if (block == null || !block.equals(newBlock)) {
-							// block has changed
-							long newWork = api.getWork();
-							if (work == 0 || newWork != work) {
-								// work has changed
-								work = newWork;
+						KristBlock b = api.getLastBlock();
+						if (b != null) {
+							String newBlock = b.getShortHash();
+							if (block == null || !block.equals(newBlock)) {
+								// block has changed
+								long newWork = api.getWork();
+								if (work == 0 || newWork != work) {
+									// work has changed
+									work = newWork;
+								}
+								block = newBlock;
+								notifyListeners();
 							}
-							block = newBlock;
-							notifyListeners();
 						}
 						Thread.sleep(refreshRate);
 					} catch (InterruptedException e) {
