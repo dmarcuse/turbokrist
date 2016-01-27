@@ -1,13 +1,5 @@
-long hashToLong(byte* hash) {
+static long hashToLong(byte* hash) {
 	return hash[5] + (hash[4] << 8) + (hash[3] << 16) + ((long)hash[2] << 24) + ((long) hash[1] << 32) + ((long) hash[0] << 40);
-}
-
-// converts one long into 12 hex characters
-void longToHex(long in, byte* hex, int offset) {
-#pragma unroll
-	for (int i = offset; i < 34; i++) {
-		hex[i] = (in >> ((i - offset) * 5) & 31) + 48;
-	}
 }
 
 __kernel void krist_miner_basic(

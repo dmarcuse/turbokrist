@@ -64,7 +64,7 @@ __constant uint K[64] = {
 //	digest(data, 5, hash);
 //	// hash array now contains hash of 'hello'
 
-void digest(byte* data, uint inputLen, byte* hash) {
+static void digest(byte* data, uint inputLen, byte* hash) {
 	/* init vars */
 	union byte_int_converter h0, h1, h2, h3, h4, h5, h6, h7, temp;
 	uint a, b, c, d, e, f, g, h, i, t1, t2, m[64] = {0};
