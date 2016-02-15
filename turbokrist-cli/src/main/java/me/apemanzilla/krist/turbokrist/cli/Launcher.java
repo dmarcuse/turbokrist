@@ -30,8 +30,8 @@ public class Launcher {
 	static {
 		options.addOption(Option.builder("h").longOpt("host").hasArg().argName("address")
 				.desc("The Krist address to mine for").build());
-		options.addOption(
-				Option.builder("p").longOpt("profiler").desc("Start the system profiler to optimize mining").build());
+//		options.addOption(
+//				Option.builder("p").longOpt("profiler").desc("Start the system profiler to optimize mining").build());
 		options.addOption(
 				Option.builder("l").longOpt("list-devices").desc("Show a list of compatible devices").build());
 		options.addOption(Option.builder("w").longOpt("work-sizes").hasArg().argName("work_sizes")
@@ -74,11 +74,11 @@ public class Launcher {
 				System.out.println("Listing compatible OpenCL devices");
 			listDevices();
 			System.exit(1);
-		} else if (cmd.hasOption('p')) {
-			if (verbose)
-				System.out.println("Running system profiler");
-			// TODO: run profiler
-			System.exit(1);
+//		} else if (cmd.hasOption('p')) {
+//			if (verbose)
+//				System.out.println("Running system profiler");
+//			// TODO: run profiler
+//			System.exit(1);
 		} else if (cmd.hasOption('?')) {
 			if (verbose)
 				System.out.println("Come on, do you really need verbose output when looking at the help?");
