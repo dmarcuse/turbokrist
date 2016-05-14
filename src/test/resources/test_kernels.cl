@@ -16,7 +16,7 @@ __kernel void testRR(__global const int* input, __global const int* dist, __glob
 // tests values of K constant
 __kernel void testK(__global int* output) {
 	int id = get_global_id(0);
-	if (id < (ulong) sizeof(K)) {
+	if (id < (int) sizeof(K)) {
 		output[id] = K[id];
 	}
 }
