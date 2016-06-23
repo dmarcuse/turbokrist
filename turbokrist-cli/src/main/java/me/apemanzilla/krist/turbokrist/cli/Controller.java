@@ -93,7 +93,7 @@ public class Controller implements MinerListener, NodeStateListener {
 				Block block = NodeState.getKrist().submitBlock(options.getKristAddress().getName(), encoded);
 
 				if (block != null) {
-					System.out.println("Success! Mined block " + block.getShortHash());
+					System.out.println("Success! Mined block '" + block.getShortHash() + "'.");
 					blocks++;
 					autoRestart = new Timer();
 					autoRestart.schedule(new TimerTask() {

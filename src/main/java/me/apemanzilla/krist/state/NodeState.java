@@ -15,10 +15,15 @@ import java.util.List;
  *
  */
 public class NodeState {
-	private static Krist krist = new Krist("http://kristtest.lemmmy.pw");
+	// TODO: This is a really stupid solution to make Krist accessible.
+	private static Krist krist;
 
 	public static Krist getKrist() {
 		return krist;
+	}
+
+	public static void setKrist(Krist _krist) {
+		krist = _krist;
 	}
 
 	public List<NodeStateListener> listeners = new ArrayList<NodeStateListener>();
@@ -40,10 +45,10 @@ public class NodeState {
 			public void run() {
 				while (true) {
 					try {
-						String newBlock = NodeState.getKrist().getLastBlock().getShortHash();
+						String newBlock = krist.getLastBlock().getShortHash();
 						if (block == null || !block.equals(newBlock)) {
 							// block has changed
-							long newWork = NodeState.getKrist().getWork();
+							long newWork = krist.getWork();
 							if (work == 0 || newWork != work) {
 								// work has changed
 								work = newWork;

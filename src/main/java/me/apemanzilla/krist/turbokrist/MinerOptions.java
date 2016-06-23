@@ -13,7 +13,6 @@ import com.nativelibs4java.opencl.CLDevice;
 import me.apemanzilla.krist.state.NodeState;
 import me.apemanzilla.krist.turbokrist.miners.MinerFactory;
 import me.lignum.jkrist.Address;
-import me.lignum.jkrist.Krist;
 
 public class MinerOptions {
 	private Address address;
