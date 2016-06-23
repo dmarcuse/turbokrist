@@ -51,7 +51,7 @@ public final class GPUMiner extends Miner implements Runnable {
 	/**
 	 * Creates a GPUMiner object. This constructor should not be used - you
 	 * should instead use {@link
-	 * me.apemanzilla.krist.turbokrist.miners.MinerFactor MinerFactory}.
+	 * me.apemanzilla.krist.turbokrist.miners.MinerFactory}.
 	 * 
 	 * @param dev @param options @throws MinerInitException
 	 */
@@ -69,7 +69,7 @@ public final class GPUMiner extends Miner implements Runnable {
 		}
 		this.kernel = program.createKernel("krist_miner_basic");
 		Pointer<Byte> addressPtr = Pointer.allocateBytes(10).order(context.getByteOrder());
-		byte[] addressBytes = MinerUtils.getBytes(options.getKristAddress().getAddress());
+		byte[] addressBytes = MinerUtils.getBytes(options.getKristAddress().getName());
 		addressPtr.setArray(addressBytes);
 		this.addressBuffer = context.createByteBuffer(Usage.Input, addressPtr);
 		this.workSize = new int[] { options.getWorkSize(MinerFactory.generateSignature(dev)) };

@@ -1,4 +1,4 @@
 rootProject.name = 'turbokrist'
 
-include 'KristAPI'
+include 'JKrist'
 include 'turbokrist-cli'

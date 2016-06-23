@@ -10,12 +10,13 @@ import java.util.Set;
 
 import com.nativelibs4java.opencl.CLDevice;
 
+import me.apemanzilla.krist.state.NodeState;
 import me.apemanzilla.krist.turbokrist.miners.MinerFactory;
-import me.apemanzilla.kristapi.types.KristAddress;
+import me.lignum.jkrist.Address;
+import me.lignum.jkrist.Krist;
 
 public class MinerOptions {
-
-	private KristAddress address;
+	private Address address;
 
 	private Map<Integer, Integer> workSizes = new HashMap<Integer, Integer>();
 
@@ -23,12 +24,12 @@ public class MinerOptions {
 
 	private int stateRefreshRate = 2000;
 
-	public KristAddress getKristAddress() {
+	public Address getKristAddress() {
 		return address;
 	}
 
 	public MinerOptions(String address) {
-		this.address = KristAddress.auto(address);
+		this.address = NodeState.getKrist().getAddress(address);
 	}
 
 	public void setWorkSize(int signature, int size) {
