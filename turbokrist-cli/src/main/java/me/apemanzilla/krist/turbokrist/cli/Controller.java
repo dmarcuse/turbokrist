@@ -1,7 +1,5 @@
 package me.apemanzilla.krist.turbokrist.cli;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -88,7 +86,7 @@ public class Controller implements MinerListener, NodeStateListener {
 			miners.stop();
 			System.out.format("Submitting solution '%s' > ", sol.getNonce());
 			try {
-				String encoded = URLEncoder.encode(sol.getNonce(), "ISO-8859-1");
+				String encoded = sol.getNonce();
 
 				Block block = NodeState.getKrist().submitBlock(options.getKristAddress().getName(), encoded);
 
@@ -107,7 +105,7 @@ public class Controller implements MinerListener, NodeStateListener {
 					System.out.println("Rejected.");
 					miners.start(state.getBlock(), (int) state.getWork());
 				}
-			} catch (KristAPIException | UnsupportedEncodingException e) {
+			} catch (KristAPIException e) {
 				System.out.println("Error!");
 				e.printStackTrace();
 				miners.start(state.getBlock(), (int) state.getWork());
