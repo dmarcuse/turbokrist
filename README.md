@@ -1,4 +1,6 @@
 # turbokrist
+
+[![Join the chat at https://gitter.im/apemanzilla/turbokrist](https://badges.gitter.im/apemanzilla/turbokrist.svg)](https://gitter.im/apemanzilla/turbokrist?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 The first-ever GPU accelerated Krist miner - using JavaCL. The original project, [JCLMiner](https://github.com/apemanzilla/JCLMiner), was abandoned in favor of this rewrite for various reasons.
 
 ## NOTE
