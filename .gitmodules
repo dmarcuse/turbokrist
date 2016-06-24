@@ -1,6 +1,3 @@
-[submodule "KristAPI"]
-	path = KristAPI
-	url = https://github.com/apemanzilla/KristAPI.git
 [submodule "JKrist"]
 	path = JKrist
 	url = https://github.com/Lignumm/JKrist
