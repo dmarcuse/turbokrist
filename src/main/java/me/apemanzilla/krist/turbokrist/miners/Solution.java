@@ -1,6 +1,8 @@
 package me.apemanzilla.krist.turbokrist.miners;
 
-import me.apemanzilla.kristapi.types.KristAddress;
+import me.apemanzilla.krist.state.NodeState;
+import me.apemanzilla.krist.turbokrist.MinerOptions;
+import me.lignum.jkrist.Address;
 
 /**
  * Represents a solution that can be submitted to the Krist syncnode.
@@ -11,12 +13,12 @@ import me.apemanzilla.kristapi.types.KristAddress;
 public class Solution {
 
 	private final String block;
-	private final KristAddress address;
+	private final Address address;
 	private final String nonce;
 
 	// TODO: Implement checking of solution validity in constructors
 
-	public Solution(KristAddress address, String block, String nonce) {
+	public Solution(Address address, String block, String nonce) {
 		this.block = block;
 		this.address = address;
 		this.nonce = nonce;
@@ -24,7 +26,7 @@ public class Solution {
 
 	public Solution(String address, String block, String nonce) {
 		this.block = block;
-		this.address = KristAddress.auto(address);
+		this.address = NodeState.getKrist().getAddress(address);
 		this.nonce = nonce;
 	}
 
@@ -32,7 +34,7 @@ public class Solution {
 		return block;
 	}
 
-	public KristAddress getAddress() {
+	public Address getAddress() {
 		return address;
 	}
 

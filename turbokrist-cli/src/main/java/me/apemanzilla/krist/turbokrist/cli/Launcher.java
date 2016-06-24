@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.apemanzilla.krist.state.NodeState;
+import me.lignum.jkrist.Krist;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -46,6 +48,8 @@ public class Launcher {
 		options.addOption(Option.builder("v").longOpt("verbose").desc("Enable verbose logging").build());
 		options.addOption(Option.builder("r").longOpt("refresh-rate").hasArg().argName("milliseconds")
 				.desc("Sets the refresh rate for checking for block/work changes").build());
+		options.addOption(Option.builder("n").longOpt("node").hasArg().argName("nodeURL")
+				.desc("The URL of the Krist node to mine for.").build());
 		options.addOption(Option.builder("?").longOpt("help").desc("Show command-line usage").build());
 	}
 
@@ -89,6 +93,18 @@ public class Launcher {
 			System.out.println("Please specify an address with -h.");
 			System.exit(1);
 		}
+
+		if (cmd.hasOption("n")) {
+			String nodeURL = cmd.getOptionValue('n');
+			if (verbose)
+				System.out.println("Using Krist node " + nodeURL);
+			NodeState.setKrist(new Krist(nodeURL));
+		} else {
+			if (verbose)
+				System.out.println("Using default Krist node (krist.ceriat.net)");
+			NodeState.setKrist(new Krist());
+		}
+
 		MinerOptions options = new MinerOptions(cmd.getOptionValue("h"));
 		if (cmd.hasOption("a")) {
 			if (verbose)
@@ -123,6 +139,7 @@ public class Launcher {
 				System.out.println("Setting refresh rate.");
 			options.setStateRefreshRate(Integer.parseInt(cmd.getOptionValue("r")));
 		}
+
 		System.out.println("Starting miner...");
 		Controller controller = new Controller(options);
 		controller.start();

@@ -5,6 +5,8 @@ import java.net.URLEncoder;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import me.lignum.jkrist.Block;
+import me.lignum.jkrist.KristAPIException;
 import org.apache.commons.lang.StringUtils;
 
 import me.apemanzilla.krist.state.NodeState;
@@ -17,7 +19,6 @@ import me.apemanzilla.krist.turbokrist.miners.MinerGroup;
 import me.apemanzilla.krist.turbokrist.miners.MinerInitException;
 import me.apemanzilla.krist.turbokrist.miners.MinerListener;
 import me.apemanzilla.krist.turbokrist.miners.Solution;
-import me.apemanzilla.kristapi.exceptions.SyncnodeDownException;
 
 public class Controller implements MinerListener, NodeStateListener {
 
@@ -88,8 +89,11 @@ public class Controller implements MinerListener, NodeStateListener {
 			System.out.format("Submitting solution '%s' > ", sol.getNonce());
 			try {
 				String encoded = URLEncoder.encode(sol.getNonce(), "ISO-8859-1");
-				if (options.getKristAddress().submitBlock(encoded)) {
-					System.out.println("Success!");
+
+				Block block = NodeState.getKrist().submitBlock(options.getKristAddress().getName(), encoded);
+
+				if (block != null) {
+					System.out.println("Success! Mined block '" + block.getShortHash() + "'.");
 					blocks++;
 					autoRestart = new Timer();
 					autoRestart.schedule(new TimerTask() {
@@ -103,7 +107,7 @@ public class Controller implements MinerListener, NodeStateListener {
 					System.out.println("Rejected.");
 					miners.start(state.getBlock(), (int) state.getWork());
 				}
-			} catch (SyncnodeDownException | UnsupportedEncodingException e) {
+			} catch (KristAPIException | UnsupportedEncodingException e) {
 				System.out.println("Error!");
 				e.printStackTrace();
 				miners.start(state.getBlock(), (int) state.getWork());

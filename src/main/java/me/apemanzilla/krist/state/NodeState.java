@@ -1,11 +1,10 @@
 package me.apemanzilla.krist.state;
 
+import me.lignum.jkrist.Krist;
+import me.lignum.jkrist.KristAPIException;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import me.apemanzilla.kristapi.KristAPI;
-import me.apemanzilla.kristapi.exceptions.RemoteErrorException;
-import me.apemanzilla.kristapi.exceptions.SyncnodeDownException;
 
 /**
  * Constantly keeps track of the block and work values for Krist. Use with
@@ -16,6 +15,16 @@ import me.apemanzilla.kristapi.exceptions.SyncnodeDownException;
  *
  */
 public class NodeState {
+	// TODO: This is a really stupid solution to make Krist accessible.
+	private static Krist krist;
+
+	public static Krist getKrist() {
+		return krist;
+	}
+
+	public static void setKrist(Krist _krist) {
+		krist = _krist;
+	}
 
 	public List<NodeStateListener> listeners = new ArrayList<NodeStateListener>();
 
@@ -36,10 +45,10 @@ public class NodeState {
 			public void run() {
 				while (true) {
 					try {
-						String newBlock = KristAPI.getBlock().trim();
+						String newBlock = krist.getLastBlock().getShortHash();
 						if (block == null || !block.equals(newBlock)) {
 							// block has changed
-							long newWork = KristAPI.getWork();
+							long newWork = krist.getWork();
 							if (work == 0 || newWork != work) {
 								// work has changed
 								work = newWork;
@@ -48,10 +57,6 @@ public class NodeState {
 							notifyListeners();
 						}
 						Thread.sleep(refreshRate);
-					} catch (SyncnodeDownException e) {
-
-					} catch (RemoteErrorException e) {
-
 					} catch (InterruptedException e) {
 
 					}
