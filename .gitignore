@@ -125,3 +125,5 @@ crashlytics-build.properties
 fabric.properties
 
 !gradle-wrapper.jar
+
+privatekey

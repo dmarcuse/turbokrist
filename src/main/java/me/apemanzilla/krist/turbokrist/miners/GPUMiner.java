@@ -69,7 +69,7 @@ public final class GPUMiner extends Miner implements Runnable {
 		}
 		this.kernel = program.createKernel("krist_miner_basic");
 		Pointer<Byte> addressPtr = Pointer.allocateBytes(10).order(context.getByteOrder());
-		byte[] addressBytes = MinerUtils.getBytes(options.getKristAddress().getName());
+		byte[] addressBytes = MinerUtils.getBytes(options.getMiningAddress());
 		addressPtr.setArray(addressBytes);
 		this.addressBuffer = context.createByteBuffer(Usage.Input, addressPtr);
 		this.workSize = new int[] { options.getWorkSize(MinerFactory.generateSignature(dev)) };

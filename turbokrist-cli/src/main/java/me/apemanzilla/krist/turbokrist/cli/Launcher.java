@@ -26,12 +26,17 @@ import me.apemanzilla.krist.turbokrist.miners.MinerInitException;
  *
  */
 public class Launcher {
+	private static final String NAME_META_REGEX = "^(?:([a-z0-9-_]{1,32})@)?([a-z0-9]{1,64})\\.kst$";
 
 	private static Options options = new Options();
 
 	static {
 		options.addOption(Option.builder("h").longOpt("host").hasArg().argName("address")
 				.desc("The Krist address to mine for").build());
+		options.addOption(Option.builder("p").longOpt("privatekey").hasArg().argName("privatekey")
+				.desc("The privatekey for relay mode.").build());
+		options.addOption(Option.builder().longOpt("relay")
+				.desc("Mine to a temporary address before sending to the host address.").build());
 //		options.addOption(
 //				Option.builder("p").longOpt("profiler").desc("Start the system profiler to optimize mining").build());
 		options.addOption(
@@ -105,7 +110,15 @@ public class Launcher {
 			NodeState.setKrist(new Krist());
 		}
 
-		MinerOptions options = new MinerOptions(cmd.getOptionValue("h"));
+		MinerOptions options = new MinerOptions();
+		options.setDepositAddress(cmd.getOptionValue('h'));
+		
+		if (options.getDepositAddress().matches(NAME_META_REGEX)) {
+			if (verbose)
+				System.out.println("Name detected. Relay enabled - mining to a temporary address.");
+			options.setRelay(true);
+		}
+		
 		if (cmd.hasOption("a")) {
 			if (verbose)
 				System.out.println("Selecting all devices.");
@@ -138,6 +151,17 @@ public class Launcher {
 			if (verbose)
 				System.out.println("Setting refresh rate.");
 			options.setStateRefreshRate(Integer.parseInt(cmd.getOptionValue("r")));
+		}
+		if (cmd.hasOption("p")) {
+			String privatekey = cmd.getOptionValue('p');
+			if (verbose)
+				System.out.println("Using custom privatekey.");
+			options.setPrivatekey(privatekey);
+		}
+		if (cmd.hasOption("relay")) {
+			if (verbose)
+				System.out.println("Relay enabled - mining to a temporary address.");
+			options.setRelay(true);
 		}
 
 		System.out.println("Starting miner...");

@@ -10,27 +10,46 @@ import java.util.Set;
 
 import com.nativelibs4java.opencl.CLDevice;
 
-import me.apemanzilla.krist.state.NodeState;
 import me.apemanzilla.krist.turbokrist.miners.MinerFactory;
-import me.lignum.jkrist.Address;
 
 public class MinerOptions {
-	private Address address;
+	private String tempAddress, depositAddress;
 
 	private Map<Integer, Integer> workSizes = new HashMap<Integer, Integer>();
 
 	private Set<Integer> devices = new HashSet<Integer>();
 
 	private int stateRefreshRate = 2000;
-
-	public Address getKristAddress() {
-		return address;
+	
+	private String privatekey;
+	private boolean relay;
+	
+	public String getTempAddress() {
+		return tempAddress;
 	}
-
-	public MinerOptions(String address) {
-		this.address = NodeState.getKrist().getAddress(address);
+	
+	public MinerOptions setTempAddress(String tempAddress) {
+		this.tempAddress = tempAddress;
+		return this;
 	}
-
+	
+	public String getDepositAddress() {
+		return depositAddress;
+	}
+	
+	public MinerOptions setDepositAddress(String depositAddress) {
+		this.depositAddress = depositAddress;
+		return this;
+	}
+	
+	public String getMiningAddress() {
+		if (relay) {
+			return getTempAddress();
+		} else {
+			return getDepositAddress();
+		}
+	}
+	
 	public void setWorkSize(int signature, int size) {
 		workSizes.put(signature, size);
 	}
@@ -103,5 +122,22 @@ public class MinerOptions {
 	public void setStateRefreshRate(int stateRefreshRate) {
 		this.stateRefreshRate = stateRefreshRate;
 	}
-
+	
+	public String getPrivatekey() {
+		return privatekey;
+	}
+	
+	public MinerOptions setPrivatekey(String privatekey) {
+		this.privatekey = privatekey;
+		return this;
+	}
+	
+	public boolean isRelay() {
+		return relay;
+	}
+	
+	public MinerOptions setRelay(boolean relay) {
+		this.relay = relay;
+		return this;
+	}
 }
