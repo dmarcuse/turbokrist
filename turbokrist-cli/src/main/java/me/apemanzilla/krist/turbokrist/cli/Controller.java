@@ -101,8 +101,6 @@ public class Controller implements MinerListener, NodeStateListener {
 		
 		if (authedAddress == null) {
 			throw new RuntimeException("Not authorized to access address " + options.getTempAddress());
-		} else if (authedAddress != options.getTempAddress()) {
-			throw new RuntimeException("Authed address is not the same as temp address. This shouldn't happen.");
 		}
 	}
 	
@@ -137,7 +135,7 @@ public class Controller implements MinerListener, NodeStateListener {
 
 				if (block != null) {
 					if (options.isRelay()) {
-						System.out.println("Relaying... ");
+						System.out.print("Relaying... ");
 						
 						Transaction transaction = NodeState.getKrist().makeTransaction(options.getPrivatekey(), options
 							.getDepositAddress(), block.getValue());
