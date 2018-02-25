@@ -8,9 +8,11 @@ import java.security.SecureRandom;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import junit.framework.Assert;
 import me.lignum.jkrist.Address;
 import me.lignum.jkrist.Block;
 import me.lignum.jkrist.KristAPIException;
+import me.lignum.jkrist.Transaction;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -94,7 +96,14 @@ public class Controller implements MinerListener, NodeStateListener {
 		}
 		
 		options.setTempAddress(Address.makeV2Address(options.getPrivatekey()));
-		NodeState.getKrist().login(options.getPrivatekey()); // make sure the addy exists
+		
+		String authedAddress = NodeState.getKrist().login(options.getPrivatekey());
+		
+		if (authedAddress == null) {
+			throw new RuntimeException("Not authorized to access address " + options.getTempAddress());
+		} else if (authedAddress != options.getTempAddress()) {
+			throw new RuntimeException("Authed address is not the same as temp address. This shouldn't happen.");
+		}
 	}
 	
 	public void start() {
@@ -128,10 +137,21 @@ public class Controller implements MinerListener, NodeStateListener {
 
 				if (block != null) {
 					if (options.isRelay()) {
-						NodeState.getKrist().makeTransaction(options.getPrivatekey(), options.getDepositAddress(), block.getValue());
+						System.out.println("Relaying... ");
+						
+						Transaction transaction = NodeState.getKrist().makeTransaction(options.getPrivatekey(), options
+							.getDepositAddress(), block.getValue());
+						
+						if (transaction == null) {
+							System.out.println("Mined block '" + block.getShortHash() + "'. Unable to relay funds - " +
+								"please check relay address.");
+						} else {
+							System.out.println("Success! Mined block '" + block.getShortHash() + "'.");
+						}
+					} else {
+						System.out.println("Success! Mined block '" + block.getShortHash() + "'.");
 					}
 					
-					System.out.println("Success! Mined block '" + block.getShortHash() + "'.");
 					blocks++;
 					autoRestart = new Timer();
 					autoRestart.schedule(new TimerTask() {
