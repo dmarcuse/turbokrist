@@ -1,10 +1,17 @@
 package me.apemanzilla.krist.turbokrist.cli;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.security.SecureRandom;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import me.lignum.jkrist.Address;
 import me.lignum.jkrist.Block;
 import me.lignum.jkrist.KristAPIException;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 
 import me.apemanzilla.krist.state.NodeState;
@@ -19,7 +26,8 @@ import me.apemanzilla.krist.turbokrist.miners.MinerListener;
 import me.apemanzilla.krist.turbokrist.miners.Solution;
 
 public class Controller implements MinerListener, NodeStateListener {
-
+	private static final String ALPHANUM = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	
 	private final MinerOptions options;
 	private NodeState state;
 	private MinerGroup miners;
@@ -38,6 +46,15 @@ public class Controller implements MinerListener, NodeStateListener {
 	
 	public Controller(MinerOptions options) throws MinerInitException {
 		this.options = options;
+		
+		if (options.isRelay()) {
+			try {
+				setupTempAddress();
+			} catch (IOException | KristAPIException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		state = new NodeState(options.getStateRefreshRate());
 		state.addListener(this);
 		Miner[] m = MinerFactory.createAll(options).toArray(new Miner[0]);
@@ -60,7 +77,26 @@ public class Controller implements MinerListener, NodeStateListener {
 		});
 		status.start();
 	}
-
+	
+	private void setupTempAddress() throws IOException, KristAPIException {
+		if (options.getPrivatekey() == null) {
+			File privatekeyFile = new File("privatekey");
+			
+			if (privatekeyFile.exists()) {
+				options.setPrivatekey(new String(Files.readAllBytes(privatekeyFile.toPath()), StandardCharsets.UTF_8));
+			} else {
+				// generate a 64-char secure random pw
+				options.setPrivatekey(RandomStringUtils.random(64, 0, ALPHANUM.length(),
+					false, false, ALPHANUM.toCharArray(), new SecureRandom()));
+				
+				Files.write(privatekeyFile.toPath(), options.getPrivatekey().getBytes());
+			}
+		}
+		
+		options.setTempAddress(Address.makeV2Address(options.getPrivatekey()));
+		NodeState.getKrist().login(options.getPrivatekey()); // make sure the addy exists
+	}
+	
 	public void start() {
 		state.start();
 	}
@@ -87,10 +123,14 @@ public class Controller implements MinerListener, NodeStateListener {
 			System.out.format("Submitting solution '%s' > ", sol.getNonce());
 			try {
 				String encoded = sol.getNonce();
-
-				Block block = NodeState.getKrist().submitBlock(options.getKristAddress().getName(), encoded);
+				
+				Block block = NodeState.getKrist().submitBlock(options.getMiningAddress(), encoded);
 
 				if (block != null) {
+					if (options.isRelay()) {
+						NodeState.getKrist().makeTransaction(options.getPrivatekey(), options.getDepositAddress(), block.getValue());
+					}
+					
 					System.out.println("Success! Mined block '" + block.getShortHash() + "'.");
 					blocks++;
 					autoRestart = new Timer();

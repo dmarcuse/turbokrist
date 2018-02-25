@@ -11,22 +11,15 @@ import me.lignum.jkrist.Address;
  *
  */
 public class Solution {
-
 	private final String block;
-	private final Address address;
+	private final String address;
 	private final String nonce;
 
 	// TODO: Implement checking of solution validity in constructors
 
-	public Solution(Address address, String block, String nonce) {
-		this.block = block;
-		this.address = address;
-		this.nonce = nonce;
-	}
-
 	public Solution(String address, String block, String nonce) {
 		this.block = block;
-		this.address = NodeState.getKrist().getAddress(address);
+		this.address = address;
 		this.nonce = nonce;
 	}
 
@@ -34,7 +27,7 @@ public class Solution {
 		return block;
 	}
 
-	public Address getAddress() {
+	public String getAddress() {
 		return address;
 	}
 
